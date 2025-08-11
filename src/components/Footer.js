@@ -9,9 +9,9 @@ class Footer extends React.Component {
           <section>
             <h5>Информация</h5>
             <ul class="nav flex-column">
-              <li class="nav-item"><a href="/about.html" class="nav-link">О магазине</a></li>
-              <li class="nav-item"><a href="/catalog.html" class="nav-link">Каталог</a></li>
-              <li class="nav-item"><a href="/contacts.html" class="nav-link">Контакты</a></li>
+              <li class="nav-item"><a href="/about" class="nav-link">О магазине</a></li>
+              <li class="nav-item"><a href="/catalog" class="nav-link">Каталог</a></li>
+              <li class="nav-item"><a href="/contacts" class="nav-link">Контакты</a></li>
             </ul>
           </section>
         </div>

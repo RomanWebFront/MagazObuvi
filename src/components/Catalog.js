@@ -1,15 +1,40 @@
 import React from 'react';
 import CatalogItemCard from './CatalogItemCard';
 import { useEffect, useState } from "react"
+import { SearchContext } from './SearchContext';
+import { useContext } from 'react';
+import { eventWrapper } from '@testing-library/user-event/dist/utils';
 
 const Catalog = () => {
   const [categories, setCategories] = useState([]);
   const [catalogItems, setCatalogItems] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const { currentSearch, setCurrentSearch } = useContext(SearchContext);
+  const [currentCategory, setCurrentCategory] = useState(-1);
+
+  const url = "http://localhost:7070/api/items";
+  const categoriesUrl = "http://localhost:7070/api/categories";
+
+  const refreshSearch = (searchQuery, category) => {
+    setLoaded(false);
+    let query = "";
+    if (!!searchQuery && category != -1) {
+      query = "?q=" + searchQuery + "&categoryId=" + category;
+    } else if (category != -1) {
+      query = "?categoryId=" + category;
+    } else if (!!searchQuery) {
+      query = "?q=" + searchQuery;
+    }
+    fetch(url + query)
+      .then(res => res.json())
+      .then(data => {
+        setCatalogItems(data);
+        setLoaded(true);
+      });
+  }
 
   useEffect(() => {
-    const url = "http://localhost:7070/api/items";
-    const categoriesUrl = "http://localhost:7070/api/categories";
+
 
     fetch(url)
       .then(res => res.json())
@@ -19,15 +44,21 @@ const Catalog = () => {
       });
 
     fetch(categoriesUrl)
-              .then(res => res.json())
-              .then(data => {
-                  setCategories(data);
-              });
-  });
+      .then(res => res.json())
+      .then(data => {
+        setCategories(data);
+      });
+  }, []);
 
-  const selectCategory = (e,categoryId)=>{
-    e.preventDefault();
-    console.log('category = '+categoryId);
+  const selectCategory = (event, categoryId) => {
+    event.preventDefault();
+    setCurrentCategory(categoryId);
+    refreshSearch(currentSearch, categoryId);
+  };
+
+  const changeSearch = (event) => {
+    setCurrentSearch(event.target.value)
+    refreshSearch(event.target.value, currentCategory);
   };
 
   return (
@@ -44,16 +75,16 @@ const Catalog = () => {
       {loaded &&
         <div>
           <form class="catalog-search-form form-inline">
-            <input class="form-control" placeholder="Поиск" />
+            <input value={currentSearch} onChange={event => changeSearch(event)} class="form-control" placeholder="Поиск" />
           </form>
           <ul class="catalog-categories nav justify-content-center">
             <li class="nav-item">
-              <a class="nav-link active" onClick={(e)=>selectCategory(e,null)} href="#">Все</a>
+              <a class={"nav-link" + (currentCategory === -1 ? " active" : "")} onClick={(e) => selectCategory(e, -1)} href="#">Все</a>
             </li>
             {categories.map((item) =>
-            <li class="nav-item">
-              <a class="nav-link" onClick={(e)=>selectCategory(e,item.id)} href="#">{item.title}</a>
-            </li>
+              <li class="nav-item">
+                <a class={"nav-link" + (currentCategory === item.id ? " active" : "")} onClick={(e) => selectCategory(e, item.id)} href="#">{item.title}</a>
+              </li>
             )}
           </ul>
           <div class="row">

@@ -47,7 +47,10 @@ const Navbar = () => {
                   <div class="header-controls-pics">
                     <div data-id="search-expander" onClick={() => toggleSearchClass()} class="header-controls-pic header-controls-search"></div>
                     <div class="header-controls-pic header-controls-cart" onClick={() => handleSubmit()}>
-                      <div class="header-controls-cart-full">{currentCart.length}</div>
+                      {currentCart.length > 0
+                      ? <div class="header-controls-cart-full">{currentCart.length}</div>
+                      : <div class="header-controls-cart"></div>
+                      }
                       <div class="header-controls-cart-menu"></div>
                     </div>
                   </div>

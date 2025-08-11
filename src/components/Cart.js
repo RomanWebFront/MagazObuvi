@@ -1,7 +1,8 @@
 import React from 'react';
 import { useContext } from 'react';
-import { CartContext } from './CartContext.js';
+import { CartContext, CartRemove } from './CartContext.js';
 import { Link } from 'react-router-dom';
+import CartPage from '../pages/CartPage.js';
 
 
 
@@ -9,8 +10,7 @@ const Cart = () => {
     const { currentCart, setCurrentCart } = useContext(CartContext);
 
     const DeleteItem = (itemForDelete) => {
-        let newCart = currentCart.filter((item) => item != itemForDelete);
-        setCurrentCart(newCart);
+        setCurrentCart(CartRemove(currentCart, itemForDelete));
     };
 
     return (
