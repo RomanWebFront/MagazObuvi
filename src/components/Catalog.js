@@ -11,12 +11,14 @@ const Catalog = () => {
   const [loaded, setLoaded] = useState(false);
   const { currentSearch, setCurrentSearch } = useContext(SearchContext);
   const [currentCategory, setCurrentCategory] = useState(-1);
+  const [showLoadedMore, setShowLoadedMore] = useState(true);
 
   const url = "http://localhost:7070/api/items";
   const categoriesUrl = "http://localhost:7070/api/categories";
 
-  const refreshSearch = (searchQuery, category) => {
-    setLoaded(false);
+  const refreshSearch = (searchQuery, category, offset) => {
+    //  setLoaded(false);
+
     let query = "";
     if (!!searchQuery && category != -1) {
       query = "?q=" + searchQuery + "&categoryId=" + category;
@@ -25,11 +27,29 @@ const Catalog = () => {
     } else if (!!searchQuery) {
       query = "?q=" + searchQuery;
     }
+    if (offset) {
+      if (query === "") {
+        query = "?offset=" + offset;
+      } else
+        query = query + "&offset=" + offset;
+    }
+
+
     fetch(url + query)
       .then(res => res.json())
       .then(data => {
-        setCatalogItems(data);
-        setLoaded(true);
+        if (data.length < 6) {
+          setShowLoadedMore(false);
+        } else {
+          setShowLoadedMore(true);
+        }
+        if (offset) {
+          let newArray = [].concat(catalogItems, data);
+          setCatalogItems(newArray);
+        } else {
+          setCatalogItems(data);
+        }
+        //      setLoaded(true);
       });
   }
 
@@ -61,6 +81,11 @@ const Catalog = () => {
     refreshSearch(event.target.value, currentCategory);
   };
 
+  const loaderMore = () => {
+    refreshSearch(currentSearch, currentCategory, catalogItems.length);
+
+  }
+
   return (
     <section class="catalog">
       <h2 class="text-center">Каталог</h2>
@@ -90,9 +115,11 @@ const Catalog = () => {
           <div class="row">
             {catalogItems.map((item) => <CatalogItemCard key={item.id} obj={item} isCatalogItem={true} />)}
           </div>
-          <div class="text-center">
-            <button class="btn btn-outline-primary">Загрузить ещё</button>
-          </div>
+          {showLoadedMore &&
+            <div class="text-center">
+              <button class="btn btn-outline-primary" onClick={loaderMore}>Загрузить ещё</button>
+            </div>
+          }
         </div>
       }
     </section>
