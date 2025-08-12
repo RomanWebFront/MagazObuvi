@@ -26,3 +26,8 @@ export const CartInit = () => {
     return newCart;
 }
 
+export const CartDelete = () => {
+    let newCart = []
+    localStorage.setItem("currentCart", JSON.stringify(newCart));
+    return newCart;
+}
