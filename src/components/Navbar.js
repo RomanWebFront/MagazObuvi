@@ -25,9 +25,9 @@ const Navbar = () => {
         <div class="row">
           <div class="col">
             <nav class="navbar navbar-expand-sm navbar-light bg-light">
-              <a class="navbar-brand" href="/">
+              <Link class="navbar-brand" to="/">
                 <img src="./img/header-logo.png" alt="Bosa Noga" />
-              </a>
+              </Link>
               <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item active">

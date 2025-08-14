@@ -22,7 +22,8 @@ export const CartRemove = (currentCart, itemForDelete) => {
 
 export const CartInit = () => {
     let newCart = JSON.parse(localStorage.getItem("currentCart"));
-
+    if (!newCart)
+        newCart = [];
     return newCart;
 }
 

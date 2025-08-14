@@ -8,14 +8,14 @@ import { CartAdd, CartContext } from './CartContext.js';
 const Card = () => {
 
     const { productId } = useParams();
-    const {currentCart, setCurrentCart} = useContext(CartContext);
+    const { currentCart, setCurrentCart } = useContext(CartContext);
     const [selectedSizeIndex, setSelectedSizeIndex] = useState(-1);
     const [item, setItem] = useState({});
     const [loaded, setLoaded] = useState(false);
     const [count, setCount] = useState(1);
 
     useEffect(() => {
-        const url = "http://localhost:7070/api/items/" + productId;
+        const url = "/api/items/" + productId;
 
 
         fetch(url)
@@ -24,20 +24,20 @@ const Card = () => {
                 setItem(data);
                 setLoaded(true);
             });
-    });
+    }, []);
 
     const navigate = useNavigate();
 
     const handleCartClick = () => {
 
-            setCurrentCart(CartAdd(currentCart, item.id, item.title, item.sizes[selectedSizeIndex].size , count, item.price));
-            navigate('/cart');
+        setCurrentCart(CartAdd(currentCart, item.id, item.title, item.sizes[selectedSizeIndex].size, count, item.price));
+        navigate('/cart');
 
     };
 
 
-    if(!loaded)
-        return(<div>TODO loader</div>);
+    if (!loaded)
+        return (<div>TODO loader</div>);
 
     return (
         <section class="catalog-item">
@@ -78,23 +78,23 @@ const Card = () => {
                         </tbody>
                     </table>
                     <div class="text-center">
-                        <p>Размеры в наличии: 
-                             {item.sizes
-                             .filter((item) => item.available)
-                             .map((item, index) =>
-                             <span key={index} onClick={()=>setSelectedSizeIndex(index)} 
-                                class={"catalog-item-size "+(selectedSizeIndex==index?"selected":"")}>{item.size}</span>
-                             )}
-                             </p>
+                        <p>Размеры в наличии:
+                            {item.sizes
+                                .filter((item) => item.available)
+                                .map((item, index) =>
+                                    <span key={index} onClick={() => setSelectedSizeIndex(index)}
+                                        class={"catalog-item-size " + (selectedSizeIndex == index ? "selected" : "")}>{item.size}</span>
+                                )}
+                        </p>
                         <p>Количество: <span class="btn-group btn-group-sm pl-2">
-                            <button onClick={()=> (count >1) && setCount(count-1)}
-                             class="btn btn-secondary">-</button>
+                            <button onClick={() => (count > 1) && setCount(count - 1)}
+                                class="btn btn-secondary">-</button>
                             <span class="btn btn-outline-primary">{count}</span>
-                            <button onClick={()=> (count <10) && setCount(count+1)} class="btn btn-secondary">+</button>
+                            <button onClick={() => (count < 10) && setCount(count + 1)} class="btn btn-secondary">+</button>
                         </span>
                         </p>
                     </div>
-                    { (selectedSizeIndex != -1) &&
+                    {(selectedSizeIndex != -1) &&
                         <button onClick={handleCartClick} class="btn btn-danger btn-block btn-lg">В корзину</button>
                     }
                 </div>

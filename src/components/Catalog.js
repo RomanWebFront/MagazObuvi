@@ -13,8 +13,8 @@ const Catalog = () => {
   const [currentCategory, setCurrentCategory] = useState(-1);
   const [showLoadedMore, setShowLoadedMore] = useState(true);
 
-  const url = "http://localhost:7070/api/items";
-  const categoriesUrl = "http://localhost:7070/api/categories";
+  const url = "/api/items";
+  const categoriesUrl = "/api/categories";
 
   const refreshSearch = (searchQuery, category, offset) => {
     //  setLoaded(false);
@@ -107,7 +107,7 @@ const Catalog = () => {
               <a class={"nav-link" + (currentCategory === -1 ? " active" : "")} onClick={(e) => selectCategory(e, -1)} href="#">Все</a>
             </li>
             {categories.map((item) =>
-              <li class="nav-item">
+              <li class="nav-item" key={item.id}>
                 <a class={"nav-link" + (currentCategory === item.id ? " active" : "")} onClick={(e) => selectCategory(e, item.id)} href="#">{item.title}</a>
               </li>
             )}

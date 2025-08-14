@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 
 class Footer extends React.Component {
   render() {
@@ -9,9 +10,9 @@ class Footer extends React.Component {
           <section>
             <h5>Информация</h5>
             <ul class="nav flex-column">
-              <li class="nav-item"><a href="/about" class="nav-link">О магазине</a></li>
-              <li class="nav-item"><a href="/catalog" class="nav-link">Каталог</a></li>
-              <li class="nav-item"><a href="/contacts" class="nav-link">Контакты</a></li>
+              <li class="nav-item"><Link to="/about" class="nav-link">О магазине</Link></li>
+              <li class="nav-item"><Link to="/catalog" class="nav-link">Каталог</Link></li>
+              <li class="nav-item"><Link to="/contacts" class="nav-link">Контакты</Link></li>
             </ul>
           </section>
         </div>

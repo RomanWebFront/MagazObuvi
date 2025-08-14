@@ -2,13 +2,13 @@ import React from 'react';
 import CatalogItemCard from './CatalogItemCard';
 import { useEffect, useState } from "react"
 
+const url = "/api/top-sales";
 
 const TopSalers = () => {
     const [catalogItems, setCatalogItems] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        const url = "http://localhost:7070/api/top-sales";
 
         fetch(url)
             .then(res => res.json())
