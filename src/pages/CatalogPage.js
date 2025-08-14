@@ -5,7 +5,7 @@ class CatalogPage extends React.Component {
   render() {
     return (
       <div>
-        < Catalog />
+        < Catalog showSearch = {true} />
       </div>
     );
   }

@@ -5,10 +5,10 @@ import Catalog from "../components/Catalog.js"
 class HomePage extends React.Component {
   render() {
     return (
-      <div>
+      <>
         < TopSalers />
-        < Catalog />
-      </div>
+        < Catalog showSearch = {false} />
+      </>
     );
   }
 }

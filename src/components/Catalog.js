@@ -5,7 +5,7 @@ import { SearchContext } from './SearchContext';
 import { useContext } from 'react';
 import { eventWrapper } from '@testing-library/user-event/dist/utils';
 
-const Catalog = () => {
+const Catalog = ({showSearch}) => {
   const [categories, setCategories] = useState([]);
   const [catalogItems, setCatalogItems] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -99,9 +99,11 @@ const Catalog = () => {
       }
       {loaded &&
         <div>
-          <form class="catalog-search-form form-inline">
+          { showSearch && 
+            <form class="catalog-search-form form-inline">
             <input value={currentSearch} onChange={event => changeSearch(event)} class="form-control" placeholder="Поиск" />
           </form>
+          }
           <ul class="catalog-categories nav justify-content-center">
             <li class="nav-item">
               <a class={"nav-link" + (currentCategory === -1 ? " active" : "")} onClick={(e) => selectCategory(e, -1)} href="#">Все</a>

@@ -18,6 +18,10 @@ const TopSalers = () => {
             });
     }, []);
 
+    if (catalogItems.length === 0) {
+        return(<></>);
+    }
+
     return (
         <section class="top-sales">
             <h2 class="text-center">Хиты продаж!</h2>
