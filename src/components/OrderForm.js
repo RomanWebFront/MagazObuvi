@@ -10,6 +10,8 @@ const OrderForm = () => {
   const { currentCart, setCurrentCart } = useContext(CartContext);
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   const handleSubmit = (event) => {
 
@@ -34,10 +36,10 @@ const OrderForm = () => {
 
       .then(result => {
         setCurrentCart(CartDelete());
-        alert("Заказ успешно оформлен");
+        setErrorMessage("Заказ успешно оформлен");
       },
         error => {
-          alert("Возникла ошибка при оформлении заказа");
+          setErrorMessage("Возникла ошибка при оформлении заказа");
         });
 
   };
@@ -60,6 +62,7 @@ const OrderForm = () => {
             <label class="form-check-label" for="agreement">Согласен с правилами доставки</label>
           </div>
           <button type="submit" class="btn btn-outline-secondary" onClick={(e) => handleSubmit(e)}>Оформить</button>
+          {errorMessage && <div className="error">{errorMessage}</div>}
         </form>
       </div>
     </section>
