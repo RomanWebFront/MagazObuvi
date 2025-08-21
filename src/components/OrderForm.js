@@ -11,10 +11,12 @@ const OrderForm = () => {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [agreement, setAgreement] = useState(false);
+  const [loading, setLoading] = useState(false);
 
 
   const handleSubmit = (event) => {
-
+    setLoading(true)
     event.preventDefault();
 
     let order = {
@@ -40,9 +42,14 @@ const OrderForm = () => {
       },
         error => {
           setErrorMessage("Возникла ошибка при оформлении заказа");
-        });
+        })
+        .then(() => setLoading(false));
 
   };
+
+  const canSubmit = () => {
+    return !!phone && !!address && agreement && currentCart.length > 0;
+  }
 
   return (
     <section class="order">
@@ -58,11 +65,19 @@ const OrderForm = () => {
             <input value={address} onChange={e => setAddress(e.target.value)} class="form-control" id="address" placeholder="Адрес доставки" />
           </div>
           <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="agreement" />
+            <input value={agreement} onChange={e => setAgreement(e.target.checked)} type="checkbox" class="form-check-input" id="agreement" />
             <label class="form-check-label" for="agreement">Согласен с правилами доставки</label>
           </div>
-          <button type="submit" class="btn btn-outline-secondary" onClick={(e) => handleSubmit(e)}>Оформить</button>
-          {errorMessage && <div className="error">{errorMessage}</div>}
+          <button disabled={!canSubmit()} type="submit" class="btn btn-outline-secondary" onClick={(e) => handleSubmit(e)}>Оформить</button>
+          {loading &&
+            <div class="preloader">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          }
+          {errorMessage && !loading && <div className="error">{errorMessage}</div>}
         </form>
       </div>
     </section>

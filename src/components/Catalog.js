@@ -4,20 +4,23 @@ import { useEffect, useState } from "react"
 import { SearchContext } from './SearchContext';
 import { useContext } from 'react';
 import { eventWrapper } from '@testing-library/user-event/dist/utils';
+import useDebounce from "./useDebounce";
 
-const Catalog = ({showSearch}) => {
+const Catalog = ({ showSearch }) => {
   const [categories, setCategories] = useState([]);
   const [catalogItems, setCatalogItems] = useState([]);
-  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { currentSearch, setCurrentSearch } = useContext(SearchContext);
   const [currentCategory, setCurrentCategory] = useState(-1);
   const [showLoadedMore, setShowLoadedMore] = useState(true);
+  const [loaderMoreLoading, setLoaderMoreLoading] = useState(false);
+  const [cardsLoading, setCardsLoading] = useState(false);
+
 
   const url = "/api/items";
   const categoriesUrl = "/api/categories";
 
   const refreshSearch = (searchQuery, category, offset) => {
-    //  setLoaded(false);
 
     let query = "";
     if (!!searchQuery && category != -1) {
@@ -33,9 +36,8 @@ const Catalog = ({showSearch}) => {
       } else
         query = query + "&offset=" + offset;
     }
-
-
-    fetch(url + query)
+    setShowLoadedMore(false);
+    return fetch(url + query)
       .then(res => res.json())
       .then(data => {
         if (data.length < 6) {
@@ -49,62 +51,77 @@ const Catalog = ({showSearch}) => {
         } else {
           setCatalogItems(data);
         }
-        //      setLoaded(true);
       });
   }
 
   useEffect(() => {
 
 
-    fetch(url)
+    let cardsFetch = fetch(url)
       .then(res => res.json())
       .then(data => {
         setCatalogItems(data);
-        setLoaded(true);
       });
 
-    fetch(categoriesUrl)
+    let categoriesFetch = fetch(categoriesUrl)
       .then(res => res.json())
       .then(data => {
         setCategories(data);
       });
+      Promise.all([cardsFetch, categoriesFetch])
+      .then(() => setLoading(false));
   }, []);
 
   const selectCategory = (event, categoryId) => {
     event.preventDefault();
     setCurrentCategory(categoryId);
-    refreshSearch(currentSearch, categoryId);
+    setCardsLoading(true);
+    refreshSearch(currentSearch, categoryId)
+      .then(() => setCardsLoading(false));
   };
+
+  const debouncedValue = useDebounce(currentSearch, 500);
+
+  useEffect(() => {
+        refreshSearch(currentSearch, currentCategory);
+  }, [debouncedValue]);
+
 
   const changeSearch = (event) => {
     setCurrentSearch(event.target.value)
-    refreshSearch(event.target.value, currentCategory);
   };
 
   const loaderMore = () => {
-    refreshSearch(currentSearch, currentCategory, catalogItems.length);
+    setLoaderMoreLoading(true);
+    refreshSearch(currentSearch, currentCategory, catalogItems.length)
+      .then(() => setLoaderMoreLoading(false));
 
   }
 
-  return (
-    <section class="catalog">
-      <h2 class="text-center">Каталог</h2>
-      {!loaded &&
+
+  if (loading)
+    return (
+      <section class="catalog">
+        <h2 class="text-center">Каталог</h2>
         <div class="preloader">
           <span></span>
           <span></span>
           <span></span>
           <span></span>
         </div>
-      }
-      {loaded &&
-        <div>
-          { showSearch && 
-            <form class="catalog-search-form form-inline">
+      </section>
+    );
+
+  return (
+    <section class="catalog">
+      <h2 class="text-center">Каталог</h2>
+      <div>
+        {showSearch &&
+          <form class="catalog-search-form form-inline">
             <input value={currentSearch} onChange={event => changeSearch(event)} class="form-control" placeholder="Поиск" />
           </form>
-          }
-          <ul class="catalog-categories nav justify-content-center">
+        }
+        <ul class="catalog-categories nav justify-content-center">
             <li class="nav-item">
               <a class={"nav-link" + (currentCategory === -1 ? " active" : "")} onClick={(e) => selectCategory(e, -1)} href="#">Все</a>
             </li>
@@ -113,17 +130,36 @@ const Catalog = ({showSearch}) => {
                 <a class={"nav-link" + (currentCategory === item.id ? " active" : "")} onClick={(e) => selectCategory(e, item.id)} href="#">{item.title}</a>
               </li>
             )}
-          </ul>
+        </ul>
+        {cardsLoading &&
+          <div class="preloader">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        }
+        {!cardsLoading &&
           <div class="row">
             {catalogItems.map((item) => <CatalogItemCard key={item.id} obj={item} isCatalogItem={true} />)}
           </div>
-          {showLoadedMore &&
-            <div class="text-center">
+        }
+        {loaderMoreLoading &&
+                  <div class="text-center">
+          <div class="preloader">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          </div>
+        }
+        {showLoadedMore && !loaderMoreLoading &&
+          <div class="text-center">
               <button class="btn btn-outline-primary" onClick={loaderMore}>Загрузить ещё</button>
-            </div>
-          }
-        </div>
-      }
+          </div>
+        }
+      </div>
     </section>
   );
 }

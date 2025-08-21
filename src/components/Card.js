@@ -37,7 +37,12 @@ const Card = () => {
 
 
     if (!loaded)
-        return (<div>TODO loader</div>);
+        return (<div class="preloader">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>);
 
     return (
         <section class="catalog-item">
